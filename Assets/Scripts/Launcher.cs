@@ -1,13 +1,15 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime; //added to use MonoBehaviourPunCallbacks
 
 namespace Com.MyCompany.MyGame
 {
-    public class Launcher : MonoBehaviour
+    public class Launcher : MonoBehaviourPunCallbacks
     {
         #region Private Serializable Fields
-
+        [Tooltip("The max number of players per room. When a room is full, it can't be joined by new players, and so a new room will be created.")]
+        [SerializeField]
+        private byte maxPlayersPerRoom = 4; //initial value that can be changed in the Unity inspector
 
         #endregion
 
@@ -18,7 +20,31 @@ namespace Com.MyCompany.MyGame
 
         #endregion
 
+        #region MonoBehaviourPunCallbacks Callbacks
+        //we are going to override the OnConnectedToMaster() and OnDisconnected() PUN callbacks here
+        public override void OnConnectedToMaster()
+        {
+            Debug.Log("PUN Basics Tutorial/Launcher: OnConnectedToMaster() was called by PUN");
+            PhotonNetwork.JoinRandomRoom(); //we then implement OnJoinRandomRoomFailed() PUN callback if no room exists so we can create one using PhotonNetwork.CreateRoom()
+        }
 
+        public override void OnDisconnected(DisconnectCause cause)
+        {
+            Debug.LogWarningFormat("PUN Basics Tutorial/Launcher: OnDisconnected() was called by PUN with reason {0}", cause); //super helpful since we are exposing the given error message!
+        }
+
+        public override void OnJoinRandomFailed(short returnCode, string message)
+        {
+            Debug.Log("PUN Basics Tutorial/Launcher: OnJoinRanfomFailed() was called by PUN. No random room available, so we create one.\nCalling: PhotonNetwork.CreateRoom");
+            PhotonNetwork.CreateRoom(null, new RoomOptions{ MaxPlayers = maxPlayersPerRoom }); //? might be accepting json format property vals
+
+        }
+
+        public override void OnJoinedRoom()
+        {
+            Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Not this client is in a room.");
+        }
+        #endregion
 
         #region MonoBehaviour Callbacks
 
