@@ -62,7 +62,7 @@ namespace Com.MyCompany.MyGame
         // Start is called before the first frame update
         void Start()
         {
-            Connect();
+            //Connect(); we dont need this if we are using a button to start this
         }
         #endregion
 
