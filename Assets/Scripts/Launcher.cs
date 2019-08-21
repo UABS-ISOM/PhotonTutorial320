@@ -81,7 +81,6 @@ namespace Com.MyCompany.MyGame
                 // have to connect to Photon Online Server first
                 PhotonNetwork.GameVersion = gameVersion;
                 PhotonNetwork.ConnectUsingSettings(); // this method is the starting point to connect to Photon Cloud
-
             }
         }
 

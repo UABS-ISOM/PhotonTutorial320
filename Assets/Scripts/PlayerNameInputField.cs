@@ -1,18 +1,47 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class PlayerNameInputField : MonoBehaviour
+using Photon.Pun;
+using Photon.Realtime;
+
+namespace Com.MyCompany.MyGame
 {
-    // Start is called before the first frame update
-    void Start()
+    /// <summary>
+    ///  Player name input field. Let the user input his name, will appear ABOVE the player in the game.
+    /// </summary>
+    [RequireComponent(typeof(InputField))] //force necessity of InputField component, reduces risk of runtime and compile time errors
+    public class PlayerNameInputField : MonoBehaviour
     {
-        
-    }
+        #region Private Constants
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // stores the PlayerPref Key to avoid typos ???
+        const string playerNamePrefKey = "PlayerName";
+
+        #endregion
+
+        #region MonoBehaviour Callbacks
+        /// <summary>
+        ///  MonoBehaviour method called on GameObject by Unity, during the initialisation phase
+        /// </summary>
+        void Start()
+        {
+            string defaultName = string.Empty; //local field
+            InputField _inputField = this.GetComponent<InputField>();
+            if (_inputField != null)
+            {
+                if (PlayerPrefs.HasKey(playerNamePrefKey))
+                {
+                    defaultName = PlayerPrefs.GetString(playerNamePrefKey);
+                    _inputField.text = defaultName;
+                }
+            }
+
+            PhotonNetwork.NickName = defaultName;
+        }
+
+        #endregion
     }
 }
+
