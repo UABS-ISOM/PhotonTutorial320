@@ -42,6 +42,20 @@ namespace Com.MyCompany.MyGame
         }
 
         #endregion
+
+        #region Public Methods
+        public void SetPlayerName(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                Debug.LogError("Player Name is null or empty");
+                return; //end logic if nothing is in input
+            }
+            PhotonNetwork.NickName = value;
+
+            PlayerPrefs.SetString(playerNamePrefKey, value);
+        }
+        #endregion
     }
 }
 

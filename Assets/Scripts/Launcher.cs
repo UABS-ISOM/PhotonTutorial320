@@ -1,16 +1,28 @@
 ﻿using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime; //added to use MonoBehaviourPunCallbacks
+using UnityEngine.UI;
 
 namespace Com.MyCompany.MyGame
 {
     public class Launcher : MonoBehaviourPunCallbacks
     {
+        #region Public Fields
+
+        #endregion
         #region Private Serializable Fields
         [Tooltip("The max number of players per room. When a room is full, it can't be joined by new players, and so a new room will be created.")]
         [SerializeField]
         private byte maxPlayersPerRoom = 4; //initial value that can be changed in the Unity inspector
 
+        //these are used for control panel and progresslabel status
+        [Tooltip("The UI panel to let the user enter the name, connect and play.")]
+        [SerializeField]
+        private GameObject controlPanel;
+
+        [Tooltip("The UI label to inform the user that the connection is in progress")]
+        [SerializeField]
+        private GameObject progressLabel;
         #endregion
 
         #region Private Fields
@@ -30,19 +42,22 @@ namespace Com.MyCompany.MyGame
 
         public override void OnDisconnected(DisconnectCause cause)
         {
+            // logic for controlpanel and progress message for disconnecting
+            progressLabel.SetActive(false);
+            controlPanel.SetActive(true);
             Debug.LogWarningFormat("PUN Basics Tutorial/Launcher: OnDisconnected() was called by PUN with reason {0}", cause); //super helpful since we are exposing the given error message!
         }
 
         public override void OnJoinRandomFailed(short returnCode, string message)
         {
-            Debug.Log("PUN Basics Tutorial/Launcher: OnJoinRanfomFailed() was called by PUN. No random room available, so we create one.\nCalling: PhotonNetwork.CreateRoom");
+            Debug.Log("PUN Basics Tutorial/Launcher: OnJoinRandomFailed() was called by PUN. No random room available, so a new room will be created.\nCalling: PhotonNetwork.CreateRoom");
             PhotonNetwork.CreateRoom(null, new RoomOptions{ MaxPlayers = maxPlayersPerRoom }); //? might be accepting json format property vals
 
         }
 
         public override void OnJoinedRoom()
         {
-            Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Not this client is in a room.");
+            Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
         }
         #endregion
 
@@ -63,6 +78,10 @@ namespace Com.MyCompany.MyGame
         void Start()
         {
             //Connect(); we dont need this if we are using a button to start this
+
+            // logic for controlpanel and progress message
+            progressLabel.SetActive(false);
+            controlPanel.SetActive(true);
         }
         #endregion
 
@@ -72,6 +91,10 @@ namespace Com.MyCompany.MyGame
 
         public void Connect()
         {
+            // logic for controlpanel and progress message when attempting connection
+            progressLabel.SetActive(true);
+            controlPanel.SetActive(false); //hides control panel
+
             if (PhotonNetwork.IsConnected) //check if connected or not, join random room if we are, else we attempt connect to the Photon Online Server
             {
                 PhotonNetwork.JoinRandomRoom(); //if this fails Photon will call OnJoinRandomFailed() RPC, if we implement this we can choose how to handle the response
