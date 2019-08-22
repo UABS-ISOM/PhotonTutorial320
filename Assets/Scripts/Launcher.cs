@@ -29,7 +29,7 @@ namespace Com.MyCompany.MyGame
 
         // Client's version number -- we separate users from each other bty gameVersion based on "gamebreaking" version features
         string gameVersion = "1"; //re: see Semantic Versioning for versioning choice and connotations
-
+        bool isConnecting;
         #endregion
 
         #region MonoBehaviourPunCallbacks Callbacks
@@ -37,7 +37,10 @@ namespace Com.MyCompany.MyGame
         public override void OnConnectedToMaster()
         {
             Debug.Log("PUN Basics Tutorial/Launcher: OnConnectedToMaster() was called by PUN");
-            PhotonNetwork.JoinRandomRoom(); //we then implement OnJoinRandomRoomFailed() PUN callback if no room exists so we can create one using PhotonNetwork.CreateRoom()
+            if (isConnecting) //we only progress to joining a random room when we have intention to connect
+            {
+                PhotonNetwork.JoinRandomRoom(); //we then implement OnJoinRandomRoomFailed() PUN callback if no room exists so we can create one using PhotonNetwork.CreateRoom()
+            }
         }
 
         public override void OnDisconnected(DisconnectCause cause)
@@ -58,6 +61,14 @@ namespace Com.MyCompany.MyGame
         public override void OnJoinedRoom()
         {
             Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
+
+            if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+            {
+                Debug.Log("We load the 'Room for 1' ");
+
+                // load the room level
+                PhotonNetwork.LoadLevel("Room for 1");
+            }
         }
         #endregion
 
@@ -91,6 +102,7 @@ namespace Com.MyCompany.MyGame
 
         public void Connect()
         {
+            isConnecting = true; //intention to connect, will be false when exiting
             // logic for controlpanel and progress message when attempting connection
             progressLabel.SetActive(true);
             controlPanel.SetActive(false); //hides control panel
