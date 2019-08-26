@@ -12,6 +12,9 @@ namespace Com.MyCompany.MyGame
 {
     public class GameManagerScript : MonoBehaviourPunCallbacks
     {
+        #region Public Fields
+        public static GameManagerScript Instance;
+        #endregion
 
         #region Photon Callbacks
 
@@ -71,7 +74,7 @@ namespace Com.MyCompany.MyGame
         // Start is called before the first frame update
         void Start()
         {
-
+            Instance = this;
         }
 
         // Update is called once per frame
