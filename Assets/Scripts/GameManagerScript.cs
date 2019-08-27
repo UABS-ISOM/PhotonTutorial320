@@ -14,6 +14,9 @@ namespace Com.MyCompany.MyGame
     {
         #region Public Fields
         public static GameManagerScript Instance;
+
+        [Tooltip("The prefab to use for representing the player")]  // need this for VR modification
+        public GameObject playerPrefab;
         #endregion
 
         #region Photon Callbacks
@@ -75,6 +78,26 @@ namespace Com.MyCompany.MyGame
         void Start()
         {
             Instance = this;
+
+            // player instantiation 
+            if (playerPrefab == null)
+            {
+                Debug.LogError("<Color=Red><a>Missing</a></Color> playerPrefab Reference. Please set it up in the GameObject 'Game Manager'", this);
+            }
+            else
+            {
+                if (PlayerManager.LocalPlayerInstance == null)
+                {
+                    Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManager.GetActiveScene().name); //change from obselete Application.loadedLevelName to SceneManager.GetActiveScene.name
+                                                                                                                      // we're in a room, spawn a character for the local player. it gets synced by sing PhotonNetwork.Instantiate
+                    PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f,5f,0f), Quaternion.identity, 0); //we can swap this out here for VR capable model
+                }
+                else
+                {
+                    Debug.LogFormat("Ignoring scene load for", SceneManagerHelper.ActiveSceneName);
+                }
+                
+            }
         }
 
         // Update is called once per frame

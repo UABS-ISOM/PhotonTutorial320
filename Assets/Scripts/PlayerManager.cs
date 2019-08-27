@@ -1,13 +1,17 @@
 ﻿using Photon.Pun;
+using Photon.Pun.Demo.PunBasics;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Com.MyCompany.MyGame
 {
-    public class PlayerManager : MonoBehaviourPunCallbacks
+    // use IPunObservable to explicitly observe and synch beam firing
+    public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         #region Public Fields
+        [Tooltip("Local Player Instance. Use this to know if the local player is represented in the Scene.")]
+        public static GameObject LocalPlayerInstance;
 
         [Tooltip("The current Health of our player")]
         public float Health = 1f;
@@ -23,9 +27,47 @@ namespace Com.MyCompany.MyGame
         bool IsFiring;
         #endregion
 
+
+        #region Private Methods
+#if UNITY_5_4_OR_NEWER
+        void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode loadingMode)
+        {
+            this.CalledOnLevelWasLoaded(scene.buildIndex);
+        }
+#endif
+
+
+        #endregion
         #region MonoBehaviour Callbacks
+        void Start()
+        {
+            CameraWork _cameraWork = this.gameObject.GetComponent<CameraWork>();
+
+            if (_cameraWork != null)
+            {
+                if (photonView.IsMine)
+                {
+                    _cameraWork.OnStartFollowing();
+                }
+            }
+            else
+            {
+                Debug.LogError("<Color=Red><a>Missing</a></Color> CameraWork component on playerPrefab", this);
+            }
+
+#if UNITY_5_4_OR_NEWER
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+#endif
+        }
         void Awake()
         {
+            if (photonView.IsMine)
+            {
+                PlayerManager.LocalPlayerInstance = this.gameObject;
+            }
+
+            DontDestroyOnLoad(this.gameObject);
+
             if (beams == null)
             {
                 Debug.LogError("<Color=Red><a>MIssing</a></Color> Beams Reference.", this);
@@ -42,7 +84,7 @@ namespace Com.MyCompany.MyGame
             {
                 return;
             }
-
+             
             if (!other.name.Contains("Beam"))
             {
                 return;
@@ -64,18 +106,22 @@ namespace Com.MyCompany.MyGame
             }
 
             Health -= 0.1f * Time.deltaTime;
-        }
+        } 
 
 
         void Update()
         {
             // only process if we are the local player
-            if (photonView.IsMine)
+            if (photonView.IsMine )
             {
                 if (Health <= 0f)
                 {
                     GameManagerScript.Instance.LeaveRoom();
                 }
+                
+            }
+            if (photonView.IsMine)
+            {
                 ProcessInputs();
             }
 
@@ -85,6 +131,29 @@ namespace Com.MyCompany.MyGame
                 beams.SetActive(IsFiring);
             }
         }
+
+#if !UNITY_5_4_OR_NEWER
+        void OnLevelWasLoaded(int level)
+        {
+            this.CalledOnLevelWasLoaded(level);
+        }
+#endif
+
+        void CalledOnLevelWasLoaded(int level)
+        {
+            if (!Physics.Raycast(transform.position, -Vector3.up, 5f))
+            {
+                transform.position = new Vector3(0f, 5f, 0f);
+            }
+        }
+
+#if UNITY_5_4_OR_NEWER
+        public override void OnDisable()
+        {
+            base.OnDisable();
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+#endif
 
         #endregion
 
@@ -107,7 +176,28 @@ namespace Com.MyCompany.MyGame
                 }
             }
         }
-        #endregion
+
+
+
+#endregion
+
+#region IPunObservable implementation
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.IsWriting)
+            {
+                // we own this player, send the others our data
+                stream.SendNext(IsFiring);
+                stream.SendNext(Health);
+            }
+            else
+            {
+                // Network player, receive data
+                this.IsFiring = (bool)stream.ReceiveNext();
+                this.Health = (float)stream.ReceiveNext();
+            }
+        }
+#endregion
 
 
     }
