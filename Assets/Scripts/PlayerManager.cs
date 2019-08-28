@@ -15,6 +15,11 @@ namespace Com.MyCompany.MyGame
 
         [Tooltip("The current Health of our player")]
         public float Health = 1f;
+
+        // holds reference to Player UI prefab to allow for instantiation
+        [Tooltip("The Player's UI GameObject Prefab")]
+        [SerializeField]
+        public GameObject PlayerUiPrefab;
         #endregion
 
         #region Private Fields
@@ -41,6 +46,18 @@ namespace Com.MyCompany.MyGame
         #region MonoBehaviour Callbacks
         void Start()
         {
+            // for UI instantiation
+            if (PlayerUiPrefab != null)
+            {
+                GameObject _uiGo = Instantiate(PlayerUiPrefab);
+                _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
+            }
+            else
+            {
+                Debug.LogWarning("<Color=Red><a>Missing</a></Color> PlayerUiPrefab reference on player Prefab.",this);
+            }
+
+            // end of UI instantiation
             CameraWork _cameraWork = this.gameObject.GetComponent<CameraWork>();
 
             if (_cameraWork != null)
@@ -59,6 +76,9 @@ namespace Com.MyCompany.MyGame
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
 #endif
         }
+
+
+
         void Awake()
         {
             if (photonView.IsMine)
@@ -76,6 +96,8 @@ namespace Com.MyCompany.MyGame
             {
                 beams.SetActive(false);
             }
+
+
         }
 
         void OnTriggerEnter(Collider other)
@@ -112,7 +134,7 @@ namespace Com.MyCompany.MyGame
         void Update()
         {
             // only process if we are the local player
-            if (photonView.IsMine )
+            if (photonView.IsMine)
             {
                 if (Health <= 0f)
                 {
@@ -145,6 +167,13 @@ namespace Com.MyCompany.MyGame
             {
                 transform.position = new Vector3(0f, 5f, 0f);
             }
+            // need to re instantiate Player Ui prefab for when the player is leaving and joing anew level/room
+            GameObject _uiGo = Instantiate(this.PlayerUiPrefab);
+            _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
+
+            
+
+            
         }
 
 #if UNITY_5_4_OR_NEWER
@@ -181,7 +210,7 @@ namespace Com.MyCompany.MyGame
 
 #endregion
 
-#region IPunObservable implementation
+        #region IPunObservable implementation
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
             if (stream.IsWriting)
@@ -197,7 +226,7 @@ namespace Com.MyCompany.MyGame
                 this.Health = (float)stream.ReceiveNext();
             }
         }
-#endregion
+        #endregion
 
 
     }
