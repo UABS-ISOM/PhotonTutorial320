@@ -49,6 +49,7 @@ namespace Com.MyCompany.MyGame
 
 
             // needed for jumping
+            /*
             AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
             // only allow jumping if we are running.
             if (stateInfo.IsName("Base Layer.Run"))
@@ -69,7 +70,7 @@ namespace Com.MyCompany.MyGame
             }
             animator.SetFloat("Speed", h * h + v * v);
             animator.SetFloat("Direction", h, directionDampTime, Time.deltaTime);
-
+            */
         }
 
         #endregion
