@@ -83,6 +83,11 @@ namespace Com.MyCompany.MyGame
             {
                 PlayerName.text = photonView.Owner.NickName;
             }
+            if (photonView.IsMine)
+            {
+                Head.GetComponent<MeshRenderer>().enabled=false;
+                Head.GetComponent<Collider>().enabled = false;
+            }
 
             
             // for UI instantiation

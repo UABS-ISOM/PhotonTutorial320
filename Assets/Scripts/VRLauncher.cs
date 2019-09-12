@@ -27,6 +27,9 @@ namespace Com.MyCompany.MyGame
         //added to toggle to VR version
         [SerializeField]
         private bool IsVRVersion;
+
+        [SerializeField]
+        private GameObject PhotonGameManager;
         #endregion
 
         #region Private Fields
@@ -50,8 +53,8 @@ namespace Com.MyCompany.MyGame
         public override void OnDisconnected(DisconnectCause cause)
         {
             // logic for controlpanel and progress message for disconnecting
-            progressLabel.SetActive(false);
-            controlPanel.SetActive(true);
+            //progressLabel.SetActive(false);
+            //controlPanel.SetActive(true);
             Debug.LogWarningFormat("PUN Basics Tutorial/Launcher: OnDisconnected() was called by PUN with reason {0}", cause); //super helpful since we are exposing the given error message!
         }
 
@@ -66,11 +69,14 @@ namespace Com.MyCompany.MyGame
         {
             Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
 
-            if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+            if (PhotonNetwork.CurrentRoom.PlayerCount <= maxPlayersPerRoom)
             {
-                Debug.Log("We load the 'Room for 1' ");
+                Debug.Log("We load the 'Room has space' ");
 
                 // load the room level
+                PhotonGameManager.GetComponent<VRGameManagerScript>().enabled = true;
+                
+                /*
                 if (IsVRVersion)
                 {
                     PhotonNetwork.LoadLevel("VR Room for 1");
@@ -79,7 +85,13 @@ namespace Com.MyCompany.MyGame
                 {
                     PhotonNetwork.LoadLevel("Room for 1");
                 }
-                
+                */
+
+            }
+            else
+            {
+                Debug.Log("PUN Basics Tutorial/Launcher: OnJoinRandomFailed() was called by PUN. No space in exisiting room available, so a new room will be created.\nCalling: PhotonNetwork.CreateRoom");
+                PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = maxPlayersPerRoom });
             }
         }
         #endregion
@@ -100,11 +112,11 @@ namespace Com.MyCompany.MyGame
         // Start is called before the first frame update
         void Start()
         {
-            //Connect(); we dont need this if we are using a button to start this
+            Connect(); // we dont need this if we are using a button to start this
 
             // logic for controlpanel and progress message
-            progressLabel.SetActive(false);
-            controlPanel.SetActive(true);
+            //progressLabel.SetActive(false);
+            //controlPanel.SetActive(true);
         }
         #endregion
 
@@ -116,8 +128,8 @@ namespace Com.MyCompany.MyGame
         {
             isConnecting = true; //intention to connect, will be false when exiting
             // logic for controlpanel and progress message when attempting connection
-            progressLabel.SetActive(true);
-            controlPanel.SetActive(false); //hides control panel
+            //progressLabel.SetActive(true);
+            //controlPanel.SetActive(false); //hides control panel
 
             if (PhotonNetwork.IsConnected) //check if connected or not, join random room if we are, else we attempt connect to the Photon Online Server
             {

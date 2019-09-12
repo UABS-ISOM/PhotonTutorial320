@@ -50,7 +50,7 @@ namespace Com.MyCompany.MyGame
 
         public override void OnLeftRoom()
         {
-            SceneManager.LoadScene("VR Launcher");
+            // problem scene not needed anywaySceneManager.LoadScene("VR Launcher");
         }
         #endregion
 
@@ -70,17 +70,22 @@ namespace Com.MyCompany.MyGame
             {
                 Debug.LogError("PhotonNetwork : Trying to Load a level but we are not the master client");
             }
+            /*
             Debug.LogFormat("PhotonNetwork : Loading Level : {0}", PhotonNetwork.CurrentRoom.PlayerCount);
             PhotonNetwork.LoadLevel("VR Room for " + PhotonNetwork.CurrentRoom.PlayerCount);
+            */
         }
         #endregion
-
+        private void Awake()
+        {
+            this.enabled = false;
+        }
 
         // Start is called before the first frame update
         void Start()
         {
             Instance = this;
-
+            Debug.Log("VR Game Manager Script has started");
             // player instantiation 
             if (playerPrefab == null)
             {
