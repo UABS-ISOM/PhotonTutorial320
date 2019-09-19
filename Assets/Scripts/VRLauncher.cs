@@ -2,7 +2,6 @@
 using Photon.Pun;
 using Photon.Realtime; //added to use MonoBehaviourPunCallbacks
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 namespace Com.MyCompany.MyGame
 {
@@ -32,10 +31,6 @@ namespace Com.MyCompany.MyGame
         [SerializeField]
         private GameObject PhotonGameManager;
         #endregion
-
-        public GameObject playerPrefab;
-
-        public GameObject cameraToFollow;
 
         #region Private Fields
 
@@ -73,27 +68,6 @@ namespace Com.MyCompany.MyGame
         public override void OnJoinedRoom()
         {
             Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
-
-            if (playerPrefab == null)
-            {
-                Debug.LogError("<Color=Red><a>Missing</a></Color> playerPrefab Reference. Please set it up in the GameObject 'Game Manager'", this);
-            }
-            else
-            {
-                if (VRPlayerManager.LocalPlayerInstance == null)
-                {
-                    Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManager.GetActiveScene().name); //change from obselete Application.loadedLevelName to SceneManager.GetActiveScene.name
-                                                                                                                      // we're in a room, spawn a character for the local player. it gets synced by sing PhotonNetwork.Instantiate
-                    GameObject player = PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(0f, 5f, 0f), Quaternion.identity, 0); //we can swap this out here for VR capable model
-                    player.GetComponent<VRPlayerManager>().playerCameraToFollow = cameraToFollow;
-                }
-                else
-                {
-                    Debug.LogFormat("Ignoring scene load for", SceneManagerHelper.ActiveSceneName);
-                }
-
-
-            }
 
             if (PhotonNetwork.CurrentRoom.PlayerCount <= maxPlayersPerRoom)
             {
