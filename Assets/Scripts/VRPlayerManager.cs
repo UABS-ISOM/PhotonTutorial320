@@ -88,6 +88,8 @@ namespace Com.MyCompany.MyGame
             }
             if (photonView.IsMine)
             {
+                Color randomColor = Random.ColorHSV();
+                Head.GetComponent<Renderer>().material.color = randomColor;
                 Head.GetComponent<MeshRenderer>().enabled=false;
                 Head.GetComponent<Collider>().enabled = false;
             }
