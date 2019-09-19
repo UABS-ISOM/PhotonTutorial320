@@ -97,8 +97,8 @@ namespace Com.MyCompany.MyGame
                 {
                     Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManager.GetActiveScene().name); //change from obselete Application.loadedLevelName to SceneManager.GetActiveScene.name
                                                                                                                       // we're in a room, spawn a character for the local player. it gets synced by sing PhotonNetwork.Instantiate
-                    GameObject _player = PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f,5f,0f), Quaternion.identity, 0); //we can swap this out here for VR capable model
-                    _player.GetComponent<VRPlayerManager>().playerCameraToFollow = cameraToFollow;
+                    GameObject player = PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(0f,5f,0f), Quaternion.identity, 0); //we can swap this out here for VR capable model
+                    player.GetComponent<VRPlayerManager>().playerCameraToFollow = cameraToFollow;
                 }
                 else
                 {

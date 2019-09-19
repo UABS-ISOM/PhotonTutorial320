@@ -16,12 +16,14 @@ namespace Com.MyCompany.MyGame
         public GameObject Head;
         public TextMeshPro PlayerName;
         public GameObject TextPositioner;
-        
+        public GameObject playerCameraToFollow;
+        private object[] instantiationData;
+
         /*
         [Tooltip("The current Health of our player")]
         public float Health = 1f;
         */
-        public GameObject playerCameraToFollow;
+        
 
 
         // holds reference to Player UI prefab to allow for instantiation
@@ -57,6 +59,7 @@ namespace Com.MyCompany.MyGame
         #region MonoBehaviour Callbacks
         void Awake()
         {
+            instantiationData = gameObject.GetComponent<PhotonView>().InstantiationData;
             if (photonView.IsMine)
             {
                 LocalPlayerInstance = this.gameObject; //the prefab model this is attached to, redundant since you can just use gameObje
@@ -207,10 +210,14 @@ namespace Com.MyCompany.MyGame
                 Debug.Log("PlayerCameraToFollow does not exist");
                 return;
             }
-            Head.transform.position = playerCameraToFollow.transform.position;
-            Head.transform.rotation = playerCameraToFollow.transform.rotation;
+            if (photonView.IsMine)
+            {
+                Head.transform.position = playerCameraToFollow.transform.position;
+                Head.transform.rotation = playerCameraToFollow.transform.rotation;
+
+                TextPositioner.transform.position = playerCameraToFollow.transform.position;
+            }
             
-            TextPositioner.transform.position = playerCameraToFollow.transform.position;
         }
 
 #if !UNITY_5_4_OR_NEWER

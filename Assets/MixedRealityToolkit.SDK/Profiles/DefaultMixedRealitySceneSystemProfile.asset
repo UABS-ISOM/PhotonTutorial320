@@ -79,5 +79,5 @@ MonoBehaviour:
   editorManageBuildSettings: 1
   editorEnforceSceneOrder: 1
   editorManageLoadedScenes: 1
-  editorEnforceLightingSceneTypes: 1
+  editorEnforceLightingSceneTypes: 0
   editorLightingCacheOutOfDate: 1
