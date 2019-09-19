@@ -87,6 +87,7 @@ namespace Com.MyCompany.MyGame
             Instance = this;
             Debug.Log("VR Game Manager Script has started");
             // player instantiation 
+            /*
             if (playerPrefab == null)
             {
                 Debug.LogError("<Color=Red><a>Missing</a></Color> playerPrefab Reference. Please set it up in the GameObject 'Game Manager'", this);
@@ -105,7 +106,9 @@ namespace Com.MyCompany.MyGame
                     Debug.LogFormat("Ignoring scene load for", SceneManagerHelper.ActiveSceneName);
                 }
                 
+                
             }
+            */
         }
 
         

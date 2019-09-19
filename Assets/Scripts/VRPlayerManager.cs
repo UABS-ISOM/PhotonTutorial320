@@ -210,13 +210,13 @@ namespace Com.MyCompany.MyGame
                 Debug.Log("PlayerCameraToFollow does not exist");
                 return;
             }
-            if (photonView.IsMine)
-            {
-                Head.transform.position = playerCameraToFollow.transform.position;
-                Head.transform.rotation = playerCameraToFollow.transform.rotation;
+            
+            
+            Head.transform.position = playerCameraToFollow.transform.position;
+            Head.transform.rotation = playerCameraToFollow.transform.rotation;
 
-                TextPositioner.transform.position = playerCameraToFollow.transform.position;
-            }
+            TextPositioner.transform.position = playerCameraToFollow.transform.position;
+            
             
         }
 
