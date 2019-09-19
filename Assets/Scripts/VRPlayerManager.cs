@@ -197,7 +197,7 @@ namespace Com.MyCompany.MyGame
 
             if (!photonView.IsMine)
             {
-                TextPositioner.transform.LookAt(playerCameraToFollow.transform);
+                //TextPositioner.transform.LookAt(playerCameraToFollow.transform);
                 return;
             }
             if (LocalPlayerInstance == null)
